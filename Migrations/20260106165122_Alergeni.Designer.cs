@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using restaurant_medii.Data;
 
@@ -11,9 +12,11 @@ using restaurant_medii.Data;
 namespace restaurant_medii.Migrations
 {
     [DbContext(typeof(restaurant_mediiContext))]
-    partial class restaurant_mediiContextModelSnapshot : ModelSnapshot
+    [Migration("20260106165122_Alergeni")]
+    partial class Alergeni
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -16,5 +16,6 @@ namespace restaurant_medii.Data
 
         public DbSet<restaurant_medii.Models.Produs> Produs { get; set; } = default!;
         public DbSet<restaurant_medii.Models.Categorie> Categorie { get; set; } = default!;
+        public DbSet<restaurant_medii.Models.Alergen> Alergen { get; set; } = default!;
     }
 }

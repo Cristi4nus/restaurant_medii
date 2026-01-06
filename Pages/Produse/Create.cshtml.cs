@@ -10,7 +10,7 @@ using restaurant_medii.Models;
 
 namespace restaurant_medii.Pages.Produse
 {
-    public class CreateModel : PageModel
+    public class CreateModel : AlergenProdusPageModel
     {
         private readonly restaurant_mediiContext _context;
 
@@ -19,7 +19,6 @@ namespace restaurant_medii.Pages.Produse
             _context = context;
         }
 
-        // Dropdown pentru categorii
         public SelectList CategoriiSelectList { get; set; }
 
         [BindProperty]
@@ -27,19 +26,36 @@ namespace restaurant_medii.Pages.Produse
 
         public IActionResult OnGet()
         {
-            // Încarcă lista de categorii pentru dropdown
             CategoriiSelectList = new SelectList(_context.Categorie, "ID", "Nume");
+
+            var produs = new Produs();
+            produs.AlergeniProduse = new List<AlergenProdus>();
+
+            PopulateAssignedAlergenData(_context, produs);
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string[] selectedAlergeni)
         {
-            if (!ModelState.IsValid)
+            var newProdus = new Produs();
+
+            if (selectedAlergeni != null)
             {
-                // Dacă există erori, reîncarcă dropdown-ul
-                CategoriiSelectList = new SelectList(_context.Categorie, "ID", "Nume");
-                return Page();
+                newProdus.AlergeniProduse = new List<AlergenProdus>();
+
+                foreach (var alergen in selectedAlergeni)
+                {
+                    var alergenToAdd = new AlergenProdus
+                    {
+                        AlergenID = int.Parse(alergen)
+                    };
+
+                    newProdus.AlergeniProduse.Add(alergenToAdd);
+                }
             }
+
+            Produs.AlergeniProduse = newProdus.AlergeniProduse;
 
             _context.Produs.Add(Produs);
             await _context.SaveChangesAsync();

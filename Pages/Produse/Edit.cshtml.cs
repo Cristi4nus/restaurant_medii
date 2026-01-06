@@ -11,7 +11,7 @@ using restaurant_medii.Models;
 
 namespace restaurant_medii.Pages.Produse
 {
-    public class EditModel : PageModel
+    public class EditModel : AlergenProdusPageModel
     {
         private readonly restaurant_mediiContext _context;
 
@@ -23,7 +23,6 @@ namespace restaurant_medii.Pages.Produse
         [BindProperty]
         public Produs Produs { get; set; } = default!;
 
-        // Dropdown pentru categorii
         public SelectList CategoriiSelectList { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -31,49 +30,55 @@ namespace restaurant_medii.Pages.Produse
             if (id == null)
                 return NotFound();
 
-            // Include pentru a încărca categoria produsului
             Produs = await _context.Produs
                 .Include(p => p.Categorie)
+                .Include(p => p.AlergeniProduse)
+                    .ThenInclude(ap => ap.Alergen)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
 
             if (Produs == null)
                 return NotFound();
 
-            // Populează dropdown-ul și preselectează categoria curentă
             CategoriiSelectList = new SelectList(_context.Categorie, "ID", "Nume", Produs.CategorieID);
+
+            PopulateAssignedAlergenData(_context, Produs);
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedAlergeni)
         {
-            if (!ModelState.IsValid)
-            {
-                // Reîncarcă dropdown-ul dacă există erori
-                CategoriiSelectList = new SelectList(_context.Categorie, "ID", "Nume", Produs.CategorieID);
-                return Page();
-            }
+            if (id == null)
+                return NotFound();
 
-            _context.Attach(Produs).State = EntityState.Modified;
+            var produsToUpdate = await _context.Produs
+                .Include(p => p.Categorie)
+                .Include(p => p.AlergeniProduse)
+                    .ThenInclude(ap => ap.Alergen)
+                .FirstOrDefaultAsync(p => p.ID == id);
 
-            try
+            if (produsToUpdate == null)
+                return NotFound();
+
+            if (await TryUpdateModelAsync<Produs>(
+                produsToUpdate,
+                "Produs",
+                p => p.Nume,
+                p => p.Pret,
+                p => p.CategorieID))
             {
+                UpdateProdusAlergeni(_context, selectedAlergeni, produsToUpdate);
+
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProdusExists(Produs.ID))
-                    return NotFound();
-                else
-                    throw;
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
+            UpdateProdusAlergeni(_context, selectedAlergeni, produsToUpdate);
+            PopulateAssignedAlergenData(_context, produsToUpdate);
+            CategoriiSelectList = new SelectList(_context.Categorie, "ID", "Nume", produsToUpdate.CategorieID);
 
-        private bool ProdusExists(int id)
-        {
-            return _context.Produs.Any(e => e.ID == id);
+            return Page();
         }
     }
 }

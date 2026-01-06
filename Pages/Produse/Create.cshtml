@@ -29,7 +29,31 @@
                         asp-items="Model.CategoriiSelectList"></select>
                 <span asp-validation-for="Produs.CategorieID" class="text-danger"></span>
             </div>
-
+            <div class="form-group">
+            <div class="table">
+                <table>
+                    <tr>
+                        @{
+                            int cnt = 0;
+                            foreach (var alergen in Model.AlergeniAtribuitiList)
+                            {
+                                if (cnt++ % 3 == 0)
+                                {
+                                    @:</tr><tr>
+                                }
+                                @:<td>
+                                    <input type="checkbox"
+                                           name="selectedAlergeni"
+                                           value="@alergen.AlergenID"
+                                           @(Html.Raw(alergen.Atribuit ? "checked=\"checked\"" : "")) />
+                                    @alergen.Nume
+                                @:</td>
+                            }
+                            @:</tr>
+                        }
+                </table>
+            </div>
+        </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
