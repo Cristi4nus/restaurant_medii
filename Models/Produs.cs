@@ -8,6 +8,7 @@
 
         public int CategorieID { get; set; }
         public Categorie? Categorie { get; set; }
+        public ICollection<Comanda>? Comenzi { get; set; }
 
         public ICollection<AlergenProdus>? AlergeniProduse { get; set; }
     }

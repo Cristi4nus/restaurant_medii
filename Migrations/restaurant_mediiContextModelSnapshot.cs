@@ -70,18 +70,67 @@ namespace restaurant_medii.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int?>("AlergenID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nume")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AlergenID");
-
                     b.ToTable("Categorie");
+                });
+
+            modelBuilder.Entity("restaurant_medii.Models.Client", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nume")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Prenume")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telefon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Client");
+                });
+
+            modelBuilder.Entity("restaurant_medii.Models.Comanda", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int?>("ClientID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DataComenzii")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ProdusID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ClientID");
+
+                    b.HasIndex("ProdusID");
+
+                    b.ToTable("Comanda");
                 });
 
             modelBuilder.Entity("restaurant_medii.Models.Produs", b =>
@@ -112,7 +161,7 @@ namespace restaurant_medii.Migrations
             modelBuilder.Entity("restaurant_medii.Models.AlergenProdus", b =>
                 {
                     b.HasOne("restaurant_medii.Models.Alergen", "Alergen")
-                        .WithMany()
+                        .WithMany("AlergeniProduse")
                         .HasForeignKey("AlergenID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -128,11 +177,19 @@ namespace restaurant_medii.Migrations
                     b.Navigation("Produs");
                 });
 
-            modelBuilder.Entity("restaurant_medii.Models.Categorie", b =>
+            modelBuilder.Entity("restaurant_medii.Models.Comanda", b =>
                 {
-                    b.HasOne("restaurant_medii.Models.Alergen", null)
-                        .WithMany("Categorii")
-                        .HasForeignKey("AlergenID");
+                    b.HasOne("restaurant_medii.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientID");
+
+                    b.HasOne("restaurant_medii.Models.Produs", "Produs")
+                        .WithMany("Comenzi")
+                        .HasForeignKey("ProdusID");
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Produs");
                 });
 
             modelBuilder.Entity("restaurant_medii.Models.Produs", b =>
@@ -148,7 +205,7 @@ namespace restaurant_medii.Migrations
 
             modelBuilder.Entity("restaurant_medii.Models.Alergen", b =>
                 {
-                    b.Navigation("Categorii");
+                    b.Navigation("AlergeniProduse");
                 });
 
             modelBuilder.Entity("restaurant_medii.Models.Categorie", b =>
@@ -159,6 +216,8 @@ namespace restaurant_medii.Migrations
             modelBuilder.Entity("restaurant_medii.Models.Produs", b =>
                 {
                     b.Navigation("AlergeniProduse");
+
+                    b.Navigation("Comenzi");
                 });
 #pragma warning restore 612, 618
         }
