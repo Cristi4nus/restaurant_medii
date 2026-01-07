@@ -4,8 +4,26 @@ using restaurant_medii.Data;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy =>
+   policy.RequireRole("Admin"));
+});
 
-builder.Services.AddRazorPages();
+
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AllowAnonymousToPage("/Produse");
+    options.Conventions.AuthorizePage("/Comenzi");
+    options.Conventions.AuthorizePage("/Produse/Create", "AdminPolicy");
+    options.Conventions.AuthorizePage("/Clienti/Delete", "AdminPolicy");
+    options.Conventions.AllowAnonymousToPage("/Alergeni/Index");
+    options.Conventions.AuthorizePage("/Alergeni/Create", "AdminPolicy");
+    options.Conventions.AuthorizePage("/Alergeni/Edit", "AdminPolicy");
+    options.Conventions.AuthorizePage("/Alergeni/Delete", "AdminPolicy");
+    options.Conventions.AuthorizePage("/Categorii/Edit", "AdminPolicy");
+    options.Conventions.AuthorizePage("/Categorii/Delete", "AdminPolicy");
+});
 
 builder.Services.AddDbContext<restaurant_mediiContext>(options =>
     options.UseSqlServer(
@@ -22,7 +40,7 @@ builder.Services.AddDbContext<LibraryIdentityContext>(options =>
 );
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-    options.SignIn.RequireConfirmedAccount = true)
+    options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<LibraryIdentityContext>();
 
 var app = builder.Build();
