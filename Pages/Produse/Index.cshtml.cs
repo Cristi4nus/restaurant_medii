@@ -21,10 +21,17 @@ namespace restaurant_medii.Pages.Produse
         public ProdusData ProdusD { get; set; }
         public int ProdusID { get; set; }
         public int AlergenID { get; set; }
+        public string CategorieSortare { get; set; }
+        public string AlergenSortare { get; set; }
+        public string NumeCautare { get; set; }
 
-        public async Task OnGetAsync(int? id, int? alergenID)
+        public async Task OnGetAsync(int? id, int? alergenID, string produsSortare, string stringCautare)
         {
             ProdusD = new ProdusData();
+
+            CategorieSortare = String.IsNullOrEmpty(produsSortare) ? "categorie_desc" : "";
+            AlergenSortare = produsSortare == "alergen" ? "alergen_desc" : "alergen";
+            NumeCautare = stringCautare;
 
             Produs = await _context.Produs
                 .Include(p => p.Categorie)
@@ -33,8 +40,17 @@ namespace restaurant_medii.Pages.Produse
                 .AsNoTracking()
                 .OrderBy(p => p.Nume)
                 .ToListAsync();
+            if (!String.IsNullOrEmpty(stringCautare))
+            {
+                ProdusD.Produse = Produs
+                    .Where(s => s.Nume.Contains(stringCautare) || s.Categorie.Nume.Contains(stringCautare))
+                    .ToList();
+            }
+            else
+            {
+                ProdusD.Produse = Produs;
+            }
 
-            ProdusD.Produse = Produs;
 
             if (id != null)
             {
@@ -47,6 +63,38 @@ namespace restaurant_medii.Pages.Produse
                 ProdusD.Alergeni = produs.AlergeniProduse
                     .Select(ap => ap.Alergen);
             }
+
+            switch (produsSortare)
+            {
+                case "categorie_desc":
+                    ProdusD.Produse = ProdusD.Produse
+                        .OrderByDescending(p => p.Categorie.Nume)
+                        .ToList();
+                    break;
+
+                case "alergen":
+                    ProdusD.Produse = ProdusD.Produse
+                        .OrderBy(p => p.AlergeniProduse
+                            .Select(a => a.Alergen.NumeAlergen)
+                            .FirstOrDefault())
+                        .ToList();
+                    break;
+
+                case "alergen_desc":
+                    ProdusD.Produse = ProdusD.Produse
+                        .OrderByDescending(p => p.AlergeniProduse
+                            .Select(a => a.Alergen.NumeAlergen)
+                            .FirstOrDefault())
+                        .ToList();
+                    break;
+
+                default:
+                    ProdusD.Produse = ProdusD.Produse
+                        .OrderBy(p => p.Nume)
+                        .ToList();
+                    break;
+            }
         }
+
     }
 }

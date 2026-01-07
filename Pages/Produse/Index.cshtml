@@ -11,27 +11,47 @@
     <a asp-page="Create">Create New</a>
 </p>
 
+<form asp-page="./Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Caută după nume produs / categorie:
+            <input type="text" name="stringCautare" value="@Model.NumeCautare" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-page="./Index">Back to full list</a>
+        </p>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Produs[0].Nume)
             </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.Produs[0].Pret)
             </th>
+
             <th>
-                @Html.DisplayNameFor(model => model.Produs[0].Categorie.Nume)
+                <a asp-page="./Index" asp-route-produsSortare="@Model.CategorieSortare">
+                    @Html.DisplayNameFor(model => model.Produs[0].Categorie.Nume)
+                </a>
             </th>
+
             <th>
-                Alergeni
+                <a asp-page="./Index" asp-route-produsSortare="@Model.AlergenSortare">
+                    Alergeni
+                </a>
             </th>
+
             <th></th>
         </tr>
     </thead>
+
     <tbody>
 
-@foreach (var item in Model.Produs)
+@foreach (var item in Model.ProdusD.Produse)
 {
     string selectedRow = "";
     if (item.ID == Model.ProdusID)
@@ -41,21 +61,21 @@
 
     <tr class="@selectedRow">
         <td>
-            @Html.DisplayFor(modelItem => item.Nume)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Pret)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Categorie.Nume)
+            @item.Nume
         </td>
 
         <td>
-            @{
-                foreach (var alergen in item.AlergeniProduse)
-                {
-                    @alergen.Alergen.NumeAlergen <br />
-                }
+            @item.Pret
+        </td>
+
+        <td>
+            @item.Categorie.Nume
+        </td>
+
+        <td>
+            @foreach (var alergen in item.AlergeniProduse)
+            {
+                @alergen.Alergen.NumeAlergen <br />
             }
         </td>
 
