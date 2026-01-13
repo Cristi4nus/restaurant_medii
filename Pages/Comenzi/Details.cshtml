@@ -1,37 +1,34 @@
 ﻿@page
 @model restaurant_medii.Pages.Comenzi.DetailsModel
 
-@{
-    ViewData["Title"] = "Details";
-}
+<h1>Detalii Comandă</h1>
 
-<h1>Details</h1>
+<p><strong>Client:</strong> @Model.Comanda.Client.NumeComplet</p>
+<p><strong>Data:</strong> @Model.Comanda.DataComenzii.ToShortDateString()</p>
 
-<div>
-    <h4>Comanda</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Comanda.Client)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Comanda.Client.ID)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Comanda.Produs)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Comanda.Produs.ID)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Comanda.DataComenzii)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Comanda.DataComenzii)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.Comanda.ID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
-</div>
+<h3>Produse</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Produs</th>
+            <th>Pret</th>
+            <th>Cantitate</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cp in Model.Comanda.ProduseComanda)
+        {
+            <tr>
+                <td>@cp.Produs.Nume</td>
+                <td>@cp.Produs.Pret lei</td>
+                <td>@cp.Cantitate</td>
+                <td>@(cp.Cantitate* cp.Produs.Pret) lei</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Total: @Model.Comanda.Total lei</h3>
+
+<a asp-page="Index">Back to List</a>

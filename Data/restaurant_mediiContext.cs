@@ -19,5 +19,7 @@ namespace restaurant_medii.Data
         public DbSet<restaurant_medii.Models.Alergen> Alergen { get; set; } = default!;
         public DbSet<restaurant_medii.Models.Comanda> Comanda { get; set; } = default!;
         public DbSet<restaurant_medii.Models.Client> Client { get; set; } = default!;
+        public DbSet<restaurant_medii.Models.ComandaProdus> ComandaProdus { get; set; } = default!;
+
     }
 }

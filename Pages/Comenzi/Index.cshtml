@@ -1,48 +1,31 @@
 ﻿@page
 @model restaurant_medii.Pages.Comenzi.IndexModel
 
-@{
-    ViewData["Title"] = "Index";
-}
+<h1>Comenzi</h1>
 
-<h1>Index</h1>
+<p><a asp-page="Create">Create New</a></p>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Comanda[0].Client)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comanda[0].Produs)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comanda[0].DataComenzii)
-            </th>
+            <th>Client</th>
+            <th>Data</th>
+            <th>Total</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Comanda) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Client.NumeComplet)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Produs.Nume)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataComenzii)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Comanda)
+        {
+            <tr>
+                <td>@item.Client.NumeComplet</td>
+                <td>@item.DataComenzii.ToShortDateString()</td>
+                <td>@item.Total lei</td>
+                <td>
+                    <a asp-page="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-page="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

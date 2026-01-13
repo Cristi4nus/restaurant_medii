@@ -16,5 +16,7 @@ namespace restaurant_medii.Models
         public ICollection<Comanda>? Comenzi { get; set; }
 
         public ICollection<AlergenProdus>? AlergeniProduse { get; set; }
+        public ICollection<ComandaProdus>? ComenziProduse { get; set; }
+
     }
 }

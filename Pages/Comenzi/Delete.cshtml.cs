@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using restaurant_medii.Data;
@@ -12,9 +8,9 @@ namespace restaurant_medii.Pages.Comenzi
 {
     public class DeleteModel : PageModel
     {
-        private readonly restaurant_medii.Data.restaurant_mediiContext _context;
+        private readonly restaurant_mediiContext _context;
 
-        public DeleteModel(restaurant_medii.Data.restaurant_mediiContext context)
+        public DeleteModel(restaurant_mediiContext context)
         {
             _context = context;
         }
@@ -22,38 +18,30 @@ namespace restaurant_medii.Pages.Comenzi
         [BindProperty]
         public Comanda Comanda { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            Comanda = await _context.Comanda
+                .Include(c => c.Client)
+                .Include(c => c.ProduseComanda)
+                    .ThenInclude(cp => cp.Produs)
+                .FirstOrDefaultAsync(m => m.ID == id);
 
-            var comanda = await _context.Comanda.FirstOrDefaultAsync(m => m.ID == id);
-
-            if (comanda == null)
-            {
+            if (Comanda == null)
                 return NotFound();
-            }
-            else
-            {
-                Comanda = comanda;
-            }
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var comanda = await _context.Comanda
+                .Include(c => c.ProduseComanda)
+                .FirstOrDefaultAsync(c => c.ID == id);
 
-            var comanda = await _context.Comanda.FindAsync(id);
             if (comanda != null)
             {
-                Comanda = comanda;
-                _context.Comanda.Remove(Comanda);
+                _context.ComandaProdus.RemoveRange(comanda.ProduseComanda);
+                _context.Comanda.Remove(comanda);
                 await _context.SaveChangesAsync();
             }
 

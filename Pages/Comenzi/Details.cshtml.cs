@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using restaurant_medii.Data;
@@ -12,31 +8,26 @@ namespace restaurant_medii.Pages.Comenzi
 {
     public class DetailsModel : PageModel
     {
-        private readonly restaurant_medii.Data.restaurant_mediiContext _context;
+        private readonly restaurant_mediiContext _context;
 
-        public DetailsModel(restaurant_medii.Data.restaurant_mediiContext context)
+        public DetailsModel(restaurant_mediiContext context)
         {
             _context = context;
         }
 
         public Comanda Comanda { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            Comanda = await _context.Comanda
+                .Include(c => c.Client)
+                .Include(c => c.ProduseComanda)
+                    .ThenInclude(cp => cp.Produs)
+                .FirstOrDefaultAsync(c => c.ID == id);
 
-            var comanda = await _context.Comanda.FirstOrDefaultAsync(m => m.ID == id);
-            if (comanda == null)
-            {
+            if (Comanda == null)
                 return NotFound();
-            }
-            else
-            {
-                Comanda = comanda;
-            }
+
             return Page();
         }
     }
