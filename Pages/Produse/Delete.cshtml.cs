@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace restaurant_medii.Pages.Produse
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN")]
     public class DeleteModel : PageModel
     {
         private readonly restaurant_medii.Data.restaurant_mediiContext _context;

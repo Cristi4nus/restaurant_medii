@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace restaurant_medii.Pages.Produse
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN")]
     public class CreateModel : AlergenProdusPageModel
     {
         private readonly restaurant_mediiContext _context;
